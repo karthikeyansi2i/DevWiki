@@ -1,7 +1,10 @@
 using System.Text;
 using DevWiki.Application.Behaviors;
+using DevWiki.Domain.Interfaces;
 using DevWiki.Infrastructure.Authentication;
 using DevWiki.Infrastructure.Persistence;
+using DevWiki.Infrastructure.Repositories;
+using DevWiki.Infrastructure.Services;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -70,6 +73,8 @@ builder.Services.AddValidatorsFromAssembly(typeof(DevWiki.Application.AssemblyRe
 
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<ISlugGenerator, SlugGenerator>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 
