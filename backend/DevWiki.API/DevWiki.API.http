@@ -1,0 +1,6 @@
+@DevWiki.API_HostAddress = http://localhost:5072
+
+GET {{DevWiki.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
