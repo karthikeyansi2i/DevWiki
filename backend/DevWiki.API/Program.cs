@@ -76,6 +76,7 @@ builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<ISlugGenerator, SlugGenerator>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ISearchService, SearchService>();
+builder.Services.AddScoped<IMarkdownImportService, MarkdownImportService>();
 
 var app = builder.Build();
 

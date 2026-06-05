@@ -7,6 +7,8 @@ import DashboardPage from './pages/DashboardPage';
 import ArticlesPage from './pages/ArticlesPage';
 import ArticleDetailPage from './pages/ArticleDetailPage';
 import SearchPage from './pages/SearchPage';
+import RevisionHistoryPage from './pages/RevisionHistoryPage';
+import ImportPage from './pages/ImportPage';
 
 function App() {
   return (
@@ -31,8 +33,24 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/import"
+            element={
+              <ProtectedRoute>
+                <ImportPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/articles" element={<ArticlesPage />} />
           <Route path="/articles/:slug" element={<ArticleDetailPage />} />
+          <Route
+            path="/articles/:slug/revisions"
+            element={
+              <ProtectedRoute>
+                <RevisionHistoryPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>

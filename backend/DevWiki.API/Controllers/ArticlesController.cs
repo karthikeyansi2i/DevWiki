@@ -2,6 +2,7 @@ using DevWiki.Application.Commands.Articles;
 using DevWiki.Application.DTOs.Requests;
 using DevWiki.Application.DTOs.Responses;
 using DevWiki.Application.Queries.Articles;
+using DevWiki.Application.Queries.Revisions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -153,4 +154,78 @@ public class ArticlesController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpGet("{id}/revisions")]
+    [Authorize]
+    public async Task<IActionResult> GetRevisions(Guid id)
+    {
+        var query = new GetArticleRevisionsQuery { ArticleId = id };
+        var result = await _mediator.Send(query);
+
+        if (!result.Success)
+        {
+            return NotFound(result);
+        }
+
+        return Ok(result);
+    }
+
+    [HttpGet("{id}/revisions/{revisionId}")]
+    [Authorize]
+    public async Task<IActionResult> GetRevision(Guid id, Guid revisionId)
+    {
+        var query = new GetRevisionQuery { ArticleId = id, RevisionId = revisionId };
+        var result = await _mediator.Send(query);
+
+        if (!result.Success)
+        {
+            return NotFound(result);
+        }
+
+        return Ok(result);
+    }
+
+    [HttpPost("{id}/revisions/{revisionId}/restore")]
+    [Authorize]
+    public async Task<IActionResult> RestoreRevision(Guid id, Guid revisionId)
+    {
+        var command = new RestoreArticleCommand { ArticleId = id, RevisionId = revisionId };
+        var result = await _mediator.Send(command);
+
+        if (!result.Success)
+        {
+            return NotFound(result);
+        }
+
+        return Ok(result);
+    }
+
+    [HttpPost("import")]
+    [Authorize]
+    public async Task<IActionResult> ImportMarkdown([FromBody] ImportMarkdownRequest request)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!Guid.TryParse(userId, out var authorId))
+        {
+            return Unauthorized();
+        }
+
+        var command = new ImportMarkdownCommand
+        {
+            Content = request.Content,
+            CategoryId = request.CategoryId,
+            TagIds = request.TagIds,
+            AuthorId = authorId
+        };
+
+        var result = await _mediator.Send(command);
+        return Ok(result);
+    }
+}
+
+public class ImportMarkdownRequest
+{
+    public string Content { get; set; } = null!;
+    public int CategoryId { get; set; }
+    public List<int> TagIds { get; set; } = new();
 }
