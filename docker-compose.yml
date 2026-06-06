@@ -17,6 +17,60 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - devwiki
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: devwiki-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=postgres;Database=devwiki;Username=devwiki;Password=devwiki123"
+      Jwt__SecretKey: "your-super-secret-key-that-is-very-long-and-secure-minimum-32-characters"
+      Jwt__Issuer: "DevWiki"
+      Jwt__Audience: "DevWiki"
+      Jwt__ExpirationMinutes: "60"
+    ports:
+      - "7000:80"
+      - "7001:443"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - devwiki
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../Dockerfile.frontend
+    container_name: devwiki-web
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - devwiki
+    restart: unless-stopped
 
 volumes:
   postgres_data:
+    driver: local
+
+networks:
+  devwiki:
+    driver: bridge
