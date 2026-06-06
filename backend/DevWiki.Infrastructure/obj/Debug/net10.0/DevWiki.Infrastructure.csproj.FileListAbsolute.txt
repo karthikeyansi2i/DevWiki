@@ -1,0 +1,2 @@
+C:\Users\karthikeyan.s\hello-claude\DevWiki\backend\DevWiki.Infrastructure\obj\Debug\net10.0\DevWiki.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\karthikeyan.s\hello-claude\DevWiki\backend\DevWiki.Infrastructure\obj\Debug\net10.0\DevWiki.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig

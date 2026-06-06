@@ -1,3 +1,5 @@
+using DevWiki.Domain.Enums;
+
 namespace DevWiki.Domain.Entities;
 
 public class Article
