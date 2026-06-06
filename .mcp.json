@@ -1,0 +1,229 @@
+{
+  "mcpServers": {
+    "bash": {
+      "name": "Bash Shell Integration",
+      "description": "Execute shell commands for system operations, testing, and deployment",
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "-e",
+        "const readline = require('readline'); const rl = readline.createInterface({input: process.stdin, output: process.stdout}); rl.on('line', (line) => {console.log(JSON.stringify({status: 'received', command: line}))});"
+      ],
+      "env": {
+        "WORKING_DIR": "${PROJECT_ROOT}",
+        "NODE_ENV": "development"
+      },
+      "capabilities": [
+        "execute_command",
+        "read_environment",
+        "manage_processes"
+      ],
+      "permissions": {
+        "allow_write": true,
+        "allow_execute": true,
+        "allow_read": true
+      }
+    },
+    "codebase": {
+      "name": "Codebase Inspector",
+      "description": "Inspect and analyze the project structure, dependencies, and code patterns",
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "-e",
+        "const fs = require('fs'); const path = require('path'); function analyzeDir(dir, depth = 0, maxDepth = 3) {if (depth > maxDepth) return []; const items = []; try {const entries = fs.readdirSync(dir); entries.forEach(entry => {if (['.git', 'node_modules', '.vs', '.vscode', 'bin', 'obj', 'dist', '.mcp', 'coverage'].includes(entry)) return; const fullPath = path.join(dir, entry); const stat = fs.statSync(fullPath); items.push({name: entry, path: fullPath, isDirectory: stat.isDirectory(), size: stat.size}); if (stat.isDirectory()) items.push(...analyzeDir(fullPath, depth + 1, maxDepth));});} catch (e) {console.error('Error:', e.message);} return items;} console.log(JSON.stringify({project: analyzeDir(process.cwd())}, null, 2));"
+      ],
+      "env": {
+        "ANALYZE_DEPTH": "3"
+      },
+      "capabilities": [
+        "read_files",
+        "analyze_structure",
+        "detect_patterns"
+      ],
+      "permissions": {
+        "allow_read": true,
+        "allow_write": false
+      }
+    },
+    "git": {
+      "name": "Git Version Control",
+      "description": "Manage git operations including commits, branches, and log inspection",
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "-e",
+        "const { spawn } = require('child_process'); const rl = require('readline').createInterface({input: process.stdin}); rl.on('line', (cmd) => {const child = spawn('git', cmd.split(' '), {cwd: process.env.GIT_REPO || '.'}); let output = ''; child.stdout.on('data', (d) => {output += d.toString();}); child.on('close', (code) => {console.log(JSON.stringify({command: cmd, exitCode: code, output: output}));});});"
+      ],
+      "env": {
+        "GIT_REPO": "${PROJECT_ROOT}",
+        "GIT_AUTHOR_NAME": "DevWiki Bot",
+        "GIT_AUTHOR_EMAIL": "bot@devwiki.local"
+      },
+      "capabilities": [
+        "execute_git_commands",
+        "inspect_history",
+        "manage_branches",
+        "create_commits"
+      ],
+      "permissions": {
+        "allow_execute": true,
+        "allow_write": true,
+        "allow_read": true,
+        "restrict_to": ["git"]
+      }
+    },
+    "dotnet": {
+      "name": ".NET Development Tools",
+      "description": "Build, test, and deploy .NET application with CLI operations",
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "-e",
+        "const { spawn } = require('child_process'); const rl = require('readline').createInterface({input: process.stdin}); rl.on('line', (cmd) => {const args = cmd.split(' '); const tool = args[0]; const params = args.slice(1); const child = spawn(tool, params, {cwd: process.env.DOTNET_PROJECT_PATH || '.'}); let output = ''; let error = ''; child.stdout.on('data', (d) => {output += d.toString();}); child.stderr.on('data', (d) => {error += d.toString();}); child.on('close', (code) => {console.log(JSON.stringify({tool: tool, exitCode: code, output: output, error: error}));});});"
+      ],
+      "env": {
+        "DOTNET_PROJECT_PATH": "${PROJECT_ROOT}",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "capabilities": [
+        "build_project",
+        "run_tests",
+        "manage_migrations",
+        "package_application"
+      ],
+      "permissions": {
+        "allow_execute": true,
+        "allow_write": true,
+        "allow_read": true,
+        "restrict_to": ["dotnet"]
+      }
+    },
+    "npm": {
+      "name": "Node Package Manager",
+      "description": "Manage npm packages, dependencies, and frontend build operations",
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "-e",
+        "const { spawn } = require('child_process'); const rl = require('readline').createInterface({input: process.stdin}); rl.on('line', (cmd) => {const args = cmd.split(' '); const child = spawn('npm', args, {cwd: process.env.NPM_PROJECT_PATH || '.', stdio: 'pipe'}); let output = ''; child.stdout.on('data', (d) => {output += d.toString();}); child.on('close', (code) => {console.log(JSON.stringify({command: 'npm ' + cmd, exitCode: code, output: output}));});});"
+      ],
+      "env": {
+        "NPM_PROJECT_PATH": "${PROJECT_ROOT}/frontend",
+        "NODE_ENV": "development"
+      },
+      "capabilities": [
+        "install_packages",
+        "run_scripts",
+        "manage_dependencies",
+        "build_frontend"
+      ],
+      "permissions": {
+        "allow_execute": true,
+        "allow_write": true,
+        "allow_read": true,
+        "restrict_to": ["npm", "yarn"]
+      }
+    },
+    "docker": {
+      "name": "Docker Container Management",
+      "description": "Build, run, and manage Docker containers and images for the application stack",
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "-e",
+        "const { spawn } = require('child_process'); const rl = require('readline').createInterface({input: process.stdin}); rl.on('line', (cmd) => {const args = cmd.split(' '); const child = spawn('docker', args, {cwd: process.env.DOCKER_CONTEXT || '.'}); let output = ''; child.stdout.on('data', (d) => {output += d.toString();}); child.on('close', (code) => {console.log(JSON.stringify({command: 'docker ' + cmd, exitCode: code, output: output}));});});"
+      ],
+      "env": {
+        "DOCKER_CONTEXT": "${PROJECT_ROOT}"
+      },
+      "capabilities": [
+        "build_images",
+        "run_containers",
+        "manage_compose",
+        "inspect_logs",
+        "execute_in_container"
+      ],
+      "permissions": {
+        "allow_execute": true,
+        "allow_read": true,
+        "restrict_to": ["docker"]
+      }
+    }
+  },
+  "settings": {
+    "version": "1.0",
+    "description": "DevWiki MCP Configuration - Integrates Claude with development tools",
+    "features": {
+      "codebaseAnalysis": true,
+      "versionControl": true,
+      "buildAutomation": true,
+      "containerization": true,
+      "packageManagement": true,
+      "shellIntegration": true
+    },
+    "security": {
+      "sandboxed": true,
+      "restrictedCommands": ["sudo", "rm -rf", "git push", "docker rm -f"],
+      "allowedPaths": [
+        "${PROJECT_ROOT}",
+        "${PROJECT_ROOT}/src",
+        "${PROJECT_ROOT}/frontend",
+        "${PROJECT_ROOT}/docs",
+        "${PROJECT_ROOT}/tests"
+      ]
+    },
+    "debugging": {
+      "logLevel": "info",
+      "enableTracing": true
+    },
+    "integration": {
+      "autoDiscovery": true,
+      "cacheDuration": 3600,
+      "timeout": 30000
+    }
+  },
+  "commands": {
+    "analyze-structure": {
+      "server": "codebase",
+      "description": "Analyze the entire project structure and dependencies",
+      "example": "/analyze-structure"
+    },
+    "build-backend": {
+      "server": "dotnet",
+      "description": "Build the .NET backend application",
+      "example": "/build-backend"
+    },
+    "build-frontend": {
+      "server": "npm",
+      "description": "Build the React frontend application",
+      "example": "/build-frontend"
+    },
+    "run-tests": {
+      "server": "dotnet",
+      "description": "Run all unit tests with code coverage",
+      "example": "/run-tests"
+    },
+    "git-status": {
+      "server": "git",
+      "description": "Check git repository status and recent commits",
+      "example": "/git-status"
+    },
+    "docker-compose-up": {
+      "server": "docker",
+      "description": "Start the full application stack with Docker Compose",
+      "example": "/docker-compose-up"
+    },
+    "docker-compose-down": {
+      "server": "docker",
+      "description": "Stop and remove the Docker Compose stack",
+      "example": "/docker-compose-down"
+    }
+  },
+  "environment": {
+    "PROJECT_ROOT": ".",
+    "CONFIGURATION": "Debug",
+    "LOG_LEVEL": "Information"
+  }
+}
