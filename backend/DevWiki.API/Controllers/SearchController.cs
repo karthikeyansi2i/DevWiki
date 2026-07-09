@@ -1,11 +1,13 @@
 using DevWiki.Application.Queries.Search;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DevWiki.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[AllowAnonymous]
 public class SearchController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -28,7 +30,7 @@ public class SearchController : ControllerBase
             return BadRequest(new { error = "Search query is required" });
         }
 
-        var query = new SearchArticlesQuery
+        var query = new SearchCombinedQuery
         {
             Query = q,
             Page = page,

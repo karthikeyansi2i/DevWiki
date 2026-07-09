@@ -20,4 +20,5 @@ public class Article
     public Category Category { get; set; } = null!;
     public ICollection<ArticleTag> ArticleTags { get; set; } = new List<ArticleTag>();
     public ICollection<ArticleRevision> Revisions { get; set; } = new List<ArticleRevision>();
+    public ICollection<CodeSnippet> CodeSnippets { get; set; } = new List<CodeSnippet>();
 }

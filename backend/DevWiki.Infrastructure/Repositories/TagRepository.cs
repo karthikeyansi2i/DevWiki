@@ -16,7 +16,8 @@ public class TagRepository : ITagRepository
 
     public async Task<Tag?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.Tags.FirstOrDefaultAsync(t => t.TagId == (int)id, cancellationToken);
+        var tagId = Convert.ToInt32(id.ToString("N").Substring(24), 16);
+        return await _context.Tags.FirstOrDefaultAsync(t => t.TagId == tagId, cancellationToken);
     }
 
     public async Task<Tag?> GetBySlugAsync(string slug, CancellationToken cancellationToken = default)

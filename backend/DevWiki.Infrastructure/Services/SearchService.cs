@@ -36,24 +36,44 @@ public class SearchService : ISearchService
 
         var searchQuery = query.Trim().ToLower();
 
-        var results = _context.Articles
+        var baseQuery = _context.Articles
             .Where(a => a.Status == ArticleStatus.Active &&
-                        (EF.Functions.Like(a.Title, $"%{searchQuery}%") ||
-                         EF.Functions.Like(a.Summary, $"%{searchQuery}%") ||
-                         EF.Functions.Like(a.Content, $"%{searchQuery}%")))
+                        (a.Title.ToLower().Contains(searchQuery) ||
+                         a.Summary.ToLower().Contains(searchQuery) ||
+                         a.Content.ToLower().Contains(searchQuery) ||
+                         a.ArticleTags.Any(at => at.Tag.Name.ToLower().Contains(searchQuery))));
+
+        var totalCount = await baseQuery.CountAsync(cancellationToken);
+
+        var scoredIds = await baseQuery
+            .Select(a => new
+            {
+                a.ArticleId,
+                a.UpdatedAt,
+                Score = (a.Title.ToLower().Contains(searchQuery) ? 10 : 0) +
+                        (a.ArticleTags.Any(at => at.Tag.Name.ToLower().Contains(searchQuery)) ? 5 : 0) +
+                        (a.Summary.ToLower().Contains(searchQuery) ? 3 : 0) +
+                        (a.Content.ToLower().Contains(searchQuery) ? 1 : 0)
+            })
+            .OrderByDescending(x => x.Score)
+            .ThenByDescending(x => x.UpdatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(x => x.ArticleId)
+            .ToListAsync(cancellationToken);
+
+        var items = await _context.Articles
+            .Where(a => scoredIds.Contains(a.ArticleId))
             .Include(a => a.Author)
             .Include(a => a.Category)
             .Include(a => a.ArticleTags)
             .ThenInclude(at => at.Tag)
-            .OrderByDescending(a => a.UpdatedAt);
-
-        var totalCount = await results.CountAsync(cancellationToken);
-
-        var items = await results
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
             .ToListAsync(cancellationToken);
 
-        return (items, totalCount);
+        var orderedItems = scoredIds
+            .Select(id => items.First(a => a.ArticleId == id))
+            .ToList();
+
+        return (orderedItems, totalCount);
     }
 }

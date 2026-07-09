@@ -6,6 +6,10 @@ namespace DevWiki.Infrastructure.Persistence;
 
 public class DevWikiDbContext : DbContext
 {
+    protected DevWikiDbContext()
+    {
+    }
+
     public DevWikiDbContext(DbContextOptions<DevWikiDbContext> options) : base(options)
     {
     }
@@ -17,6 +21,7 @@ public class DevWikiDbContext : DbContext
     public DbSet<ArticleTag> ArticleTags { get; set; } = null!;
     public DbSet<ArticleRevision> ArticleRevisions { get; set; } = null!;
     public DbSet<AuditLog> AuditLogs { get; set; } = null!;
+    public DbSet<CodeSnippet> CodeSnippets { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -136,6 +141,35 @@ public class DevWikiDbContext : DbContext
             entity.HasIndex(e => e.UserId);
             entity.HasIndex(e => e.CreatedAt);
             entity.HasIndex(e => new { e.EntityType, e.EntityId });
+        });
+
+        // CodeSnippet
+        modelBuilder.Entity<CodeSnippet>(entity =>
+        {
+            entity.HasKey(e => e.SnippetId);
+            entity.Property(e => e.Title).IsRequired().HasMaxLength(255);
+            entity.Property(e => e.Language).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Code).IsRequired();
+            entity.Property(e => e.Description).HasMaxLength(500);
+
+            entity.HasOne(e => e.Article)
+                .WithMany(a => a.CodeSnippets)
+                .HasForeignKey(e => e.ArticleId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.CreatedByUser)
+                .WithMany()
+                .HasForeignKey(e => e.CreatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.UpdatedByUser)
+                .WithMany()
+                .HasForeignKey(e => e.UpdatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => e.ArticleId);
+            entity.HasIndex(e => e.Language);
+            entity.HasIndex(e => e.CreatedAt);
         });
     }
 }

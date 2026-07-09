@@ -42,6 +42,21 @@ public class ArticlesController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("by-slug/{slug}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetArticleBySlug(string slug)
+    {
+        var query = new GetArticleBySlugQuery { Slug = slug };
+        var result = await _mediator.Send(query);
+
+        if (!result.Success)
+        {
+            return NotFound(result);
+        }
+
+        return Ok(result);
+    }
+
     [HttpGet("{id}")]
     [AllowAnonymous]
     public async Task<IActionResult> GetArticleById(Guid id)

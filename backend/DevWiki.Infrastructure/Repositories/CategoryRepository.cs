@@ -16,7 +16,8 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task<Category?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.Categories.FirstOrDefaultAsync(c => c.CategoryId == (int)id, cancellationToken);
+        var categoryId = Convert.ToInt32(id.ToString("N").Substring(24), 16);
+        return await _context.Categories.FirstOrDefaultAsync(c => c.CategoryId == categoryId, cancellationToken);
     }
 
     public async Task<Category?> GetBySlugAsync(string slug, CancellationToken cancellationToken = default)

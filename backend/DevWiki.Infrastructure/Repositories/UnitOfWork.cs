@@ -9,6 +9,7 @@ public class UnitOfWork : IUnitOfWork
     private IArticleRepository? _articleRepository;
     private ICategoryRepository? _categoryRepository;
     private ITagRepository? _tagRepository;
+    private ICodeSnippetRepository? _codeSnippetRepository;
 
     public UnitOfWork(DevWikiDbContext context)
     {
@@ -18,6 +19,7 @@ public class UnitOfWork : IUnitOfWork
     public IArticleRepository Articles => _articleRepository ??= new ArticleRepository(_context);
     public ICategoryRepository Categories => _categoryRepository ??= new CategoryRepository(_context);
     public ITagRepository Tags => _tagRepository ??= new TagRepository(_context);
+    public ICodeSnippetRepository CodeSnippets => _codeSnippetRepository ??= new CodeSnippetRepository(_context);
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

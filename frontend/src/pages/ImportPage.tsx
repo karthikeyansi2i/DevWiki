@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import { ApiResponse } from '../types';
+import type { ApiResponse } from '../types';
+import Header from '../components/Header';
+
 
 interface Category {
   categoryId: number;
@@ -99,18 +101,7 @@ export default function ImportPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <nav className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link to="/" className="text-2xl font-bold text-gray-900 dark:text-white">
-              DevWiki
-            </Link>
-            <Link to="/articles" className="text-blue-600 hover:text-blue-700">
-              Articles
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Header />
 
       <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">

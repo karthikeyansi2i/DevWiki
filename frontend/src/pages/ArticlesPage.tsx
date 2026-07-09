@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
-import { ApiResponse } from '../types';
+import type { ApiResponse } from '../types';
+import Header from '../components/Header';
+
 
 interface Article {
   articleId: string;
@@ -57,21 +59,15 @@ export default function ArticlesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <nav className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link to="/" className="text-2xl font-bold text-gray-900 dark:text-white">
-              DevWiki
-            </Link>
-            <Link to="/articles/new" className="btn-primary">
-              New Article
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Header />
 
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-8">Articles</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Articles</h1>
+          <Link to="/articles/new" className="btn-primary">
+            New Article
+          </Link>
+        </div>
 
         {error && (
           <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4 mb-6">

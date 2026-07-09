@@ -48,7 +48,7 @@ public class RestoreArticleCommandHandler : IRequestHandler<RestoreArticleComman
         article.Content = targetRevision.Content;
         article.UpdatedAt = DateTime.UtcNow;
 
-        await _unitOfWork.Articles.AddAsync(newRevision, cancellationToken);
+        article.Revisions.Add(newRevision);
         _unitOfWork.Articles.Update(article);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

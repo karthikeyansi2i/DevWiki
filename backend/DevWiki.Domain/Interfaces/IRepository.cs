@@ -32,11 +32,19 @@ public interface ITagRepository : IRepository<Tag>
     Task<Tag?> GetByNameAsync(string name, CancellationToken cancellationToken = default);
 }
 
+public interface ICodeSnippetRepository : IRepository<CodeSnippet>
+{
+    Task<List<CodeSnippet>> GetByArticleAsync(Guid articleId, CancellationToken cancellationToken = default);
+    Task<(List<CodeSnippet> Items, int TotalCount)> SearchAsync(string query, int page, int pageSize, CancellationToken cancellationToken = default);
+    Task<(List<CodeSnippet> Items, int TotalCount)> GetByLanguageAsync(string language, int page, int pageSize, CancellationToken cancellationToken = default);
+}
+
 public interface IUnitOfWork : IDisposable, IAsyncDisposable
 {
     IArticleRepository Articles { get; }
     ICategoryRepository Categories { get; }
     ITagRepository Tags { get; }
+    ICodeSnippetRepository CodeSnippets { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task BeginTransactionAsync(CancellationToken cancellationToken = default);
     Task CommitAsync(CancellationToken cancellationToken = default);

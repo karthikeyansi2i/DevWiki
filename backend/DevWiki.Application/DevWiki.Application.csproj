@@ -10,6 +10,12 @@
     <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="FluentValidation" Version="11.9.1" />
     <PackageReference Include="MediatR" Version="12.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DevWiki.Domain\DevWiki.Domain.csproj" />
+    <ProjectReference Include="..\DevWiki.Infrastructure\DevWiki.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

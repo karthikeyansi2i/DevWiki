@@ -1,0 +1,13 @@
+-- ============================================
+-- 01_roles.sql
+-- Roles are stored as integer enum on Users table
+-- This file documents the role enum values
+-- ============================================
+
+-- Roles are stored directly on the Users table as integer:
+-- Admin  = 1
+-- Editor = 2
+-- Viewer = 3
+--
+-- No separate roles table exists.
+-- See 02_users.sql for role assignments.

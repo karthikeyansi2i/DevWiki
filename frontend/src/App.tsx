@@ -7,6 +7,7 @@ import DashboardPage from './pages/DashboardPage';
 import ArticlesPage from './pages/ArticlesPage';
 import ArticleDetailPage from './pages/ArticleDetailPage';
 import SearchPage from './pages/SearchPage';
+import CreateArticlePage from './pages/CreateArticlePage';
 import RevisionHistoryPage from './pages/RevisionHistoryPage';
 import ImportPage from './pages/ImportPage';
 
@@ -42,6 +43,14 @@ function App() {
             }
           />
           <Route path="/articles" element={<ArticlesPage />} />
+          <Route
+            path="/articles/new"
+            element={
+              <ProtectedRoute>
+                <CreateArticlePage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/articles/:slug" element={<ArticleDetailPage />} />
           <Route
             path="/articles/:slug/revisions"

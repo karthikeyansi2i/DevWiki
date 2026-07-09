@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
-import { ApiResponse } from '../types';
+import type { ApiResponse } from '../types';
+import Header from '../components/Header';
+
 
 interface Revision {
   revisionId: string;
@@ -25,7 +27,7 @@ export default function RevisionHistoryPage() {
 
       setLoading(true);
       try {
-        const articleRes = await api.get<any>(`/articles/${slug}`);
+        const articleRes = await api.get<any>(`/articles/by-slug/${slug}`);
         if (articleRes.data.success && articleRes.data.data) {
           setArticleId(articleRes.data.data.articleId);
 
@@ -72,18 +74,7 @@ export default function RevisionHistoryPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <nav className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link to="/" className="text-2xl font-bold text-gray-900 dark:text-white">
-              DevWiki
-            </Link>
-            <Link to="/articles" className="text-blue-600 hover:text-blue-700">
-              Articles
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Header />
 
       <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
